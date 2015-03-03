@@ -11,8 +11,7 @@ import (
 func main() {
     body, err := getWeatherResponseBody()
     if err != nil {
-        fmt.Printf("Error getting weather %v", err)
-        return
+        panic(err)
     }
     fmt.Printf("Response: %s", body)
 }
