@@ -15,19 +15,22 @@ func main() {
 }
 
 func weatherHandler(w http.ResponseWriter, r *http.Request) {
-    body, err := getWeatherResponseBody()
+    r.ParseForm()
+    cityName := r.FormValue("city")
+    body, err := getWeatherResponseBody(cityName)
 
-    melbourne := City{}
-    err = json.Unmarshal(body, &melbourne)
+    city := City{}
+    err = json.Unmarshal(body, &city)
 
     if err != nil {
         panic(err)
     }
-    fmt.Fprintf(w, "The weather in %v is %v\n", melbourne.Name, melbourne.Weather.NormalisedCurrentTemp())
+    fmt.Fprintf(w, "The weather in %v is %v\n", city.Name, city.Weather.NormalisedCurrentTemp())
 }
 
-func getWeatherResponseBody() ([]byte, error) {
-    resp, err := http.Get("http://api.openweathermap.org/data/2.5/weather?q=Melbourne,au")
+func getWeatherResponseBody(cityName string) ([]byte, error) {
+    url := fmt.Sprintf("http://api.openweathermap.org/data/2.5/weather?q=%v,au", cityName)
+    resp, err := http.Get(url)
     if err != nil {
         fmt.Printf("Error getting weather %v", err)
         return []byte(""), err
