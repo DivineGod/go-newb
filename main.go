@@ -25,7 +25,14 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         panic(err)
     }
-    fmt.Fprintf(w, "The weather in %v is %v\n", city.Name, city.Weather.NormalisedCurrentTemp())
+    fmt.Printf("The weather in %v is %v\n", city.Name, city.Weather.NormalisedCurrentTemp())
+    response, err := json.Marshal(&city)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    w.Header().Set("Content-Type", "application/json")
+    w.Write(response)
 }
 
 func getWeatherResponseBody(cityName string) ([]byte, error) {
