@@ -1,6 +1,7 @@
 package main
 
 import (
+    "encoding/json"
     "fmt"
     "net/http"
     "io/ioutil"
@@ -10,10 +11,14 @@ import (
 
 func main() {
     body, err := getWeatherResponseBody()
+
+    melbourne := City{}
+    err = json.Unmarshal(body, &melbourne)
+
     if err != nil {
         panic(err)
     }
-    fmt.Printf("Response: %s", body)
+    fmt.Printf("The weather in %v is %v\n", melbourne.Name, melbourne.Weather.NormalisedCurrentTemp())
 }
 
 func getWeatherResponseBody() ([]byte, error) {
@@ -41,5 +46,9 @@ type City struct {
 type Weather struct {
     CurrentTemp float64 `json:"temp"`
     MaxTemp     float64 `json:"temp_max"`
+}
+
+func (w Weather) NormalisedCurrentTemp() float64 {
+    return w.CurrentTemp - 273.15
 }
 
